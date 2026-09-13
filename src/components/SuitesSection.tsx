@@ -16,11 +16,12 @@ export default function SuitesSection({ onReserveSuite }: SuitesSectionProps) {
   const easeSlow = [0.22, 1, 0.36, 1];
 
   return (
-    <section id="suites" className="relative w-full py-32 md:py-44 bg-sandDark text-limestone-100 overflow-hidden">
+    <section id="suites" className="relative w-full py-20 md:py-44 bg-sandDark text-limestone-100 overflow-hidden">
       {/* Background Dark Subtle Gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-sandDark via-sandDark-card to-sandDark pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20">
           <motion.div

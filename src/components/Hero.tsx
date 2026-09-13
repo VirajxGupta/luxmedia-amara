@@ -51,7 +51,7 @@ export default function Hero({ onExploreClick }: HeroProps) {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.8, ease: easeSlow, delay: 0.4 }}
-          className="font-italiana text-7xl sm:text-9xl md:text-[11rem] text-limestone-100 font-normal tracking-[0.2em] uppercase select-none leading-none mb-6"
+          className="font-italiana text-5xl sm:text-8xl md:text-9xl lg:text-[11rem] text-limestone-100 font-normal tracking-[0.15em] sm:tracking-[0.2em] uppercase select-none leading-none mb-6 max-w-full break-words"
         >
           AMARA
         </motion.h1>
@@ -61,10 +61,11 @@ export default function Hero({ onExploreClick }: HeroProps) {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.8, ease: easeSlow, delay: 0.7 }}
-          className="font-serif italic text-2xl sm:text-3xl md:text-4xl text-limestone-200/90 font-light max-w-3xl leading-relaxed tracking-wide mb-3"
+          className="font-serif italic text-lg sm:text-2xl md:text-4xl text-limestone-200/90 font-light max-w-3xl leading-relaxed tracking-wide mb-3"
         >
           {RESORT_DATA.tagline}
         </motion.p>
+
 
 
         {/* Minimal Editorial Quote */}

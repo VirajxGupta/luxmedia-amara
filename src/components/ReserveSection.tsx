@@ -21,11 +21,12 @@ export default function ReserveSection({ onOpenReservation }: ReserveSectionProp
   };
 
   return (
-    <section id="reserve" className="relative w-full py-32 md:py-48 bg-sandDark text-limestone-100 overflow-hidden border-t border-limestone-200/10">
+    <section id="reserve" className="relative w-full py-20 md:py-48 bg-sandDark text-limestone-100 overflow-hidden border-t border-limestone-200/10">
       {/* Background Subtle Gradient & Water Shimmer Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-mediterranean-navy/30 via-sandDark to-sandDark pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+
         {/* Main CTA Block */}
         <div className="text-center max-w-3xl mx-auto mb-24">
           <motion.span
