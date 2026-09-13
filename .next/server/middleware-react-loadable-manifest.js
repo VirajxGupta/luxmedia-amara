@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST='{"components\\\\WaterSection.tsx -> ./canvas/AmaraWaterCanvas":{"id":2370,"files":["static/chunks/b536a0f1.c79de6c658298b49.js","static/chunks/496.f2008f52d5937112.js","static/chunks/370.6ae3524d843d6e4f.js"]}}';
+self.__REACT_LOADABLE_MANIFEST='{"components\\\\WaterSection.tsx -> ./canvas/AmaraWaterCanvas":{"id":2370,"files":["static/chunks/b536a0f1.c79de6c658298b49.js","static/chunks/496.f2008f52d5937112.js","static/chunks/370.c75718328805c1fd.js"]}}';

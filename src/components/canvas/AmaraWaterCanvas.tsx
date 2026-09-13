@@ -9,7 +9,7 @@ interface AmaraWaterCanvasProps {
   className?: string;
 }
 
-// Shader for Realistic Ocean Swells with Sun Beam Track & Interactive Mouse Ripples
+// Shader for Realistic Ocean Swells with Continuous Waves & Sun Glint
 const OceanShader = {
   uniforms: {
     uTime: { value: 0 },
@@ -34,23 +34,24 @@ const OceanShader = {
     void main() {
       vUv = uv;
       vec3 pos = position;
-      float t = uTime * 0.85;
+      float t = uTime * 1.2; // Continuous wave motion speed
 
-      // Compound organic ocean swells
-      float swell1 = sin(pos.x * 0.07 + t * 1.2) * cos(pos.y * 0.07 + t * 0.9) * 0.8;
-      float swell2 = sin(pos.x * 0.16 - t * 1.5) * sin(pos.y * 0.12 + t * 1.1) * 0.4;
-      float micro = cos(pos.x * 0.35 + t * 2.4) * sin(pos.y * 0.3 - t * 1.9) * 0.15;
+      // Multi-layer continuous ocean wave displacement
+      float swell1 = sin(pos.x * 0.08 + t * 1.4) * cos(pos.y * 0.08 + t * 1.0) * 0.85;
+      float swell2 = sin(pos.x * 0.18 - t * 1.8) * sin(pos.y * 0.14 + t * 1.3) * 0.45;
+      float micro = cos(pos.x * 0.4 + t * 2.8) * sin(pos.y * 0.35 - t * 2.2) * 0.2;
 
-      // Mouse ripple perturbation
+      // Mouse ripple interaction
       float distToMouse = distance(pos.xy, uMouse);
-      float mouseRipple = sin(distToMouse * 2.5 - t * 6.0) * exp(-distToMouse * 0.4) * 0.35;
+      float mouseRipple = sin(distToMouse * 2.8 - t * 6.0) * exp(-distToMouse * 0.45) * 0.4;
 
       float totalWave = swell1 + swell2 + micro + mouseRipple;
       pos.z += totalWave;
       vWaveHeight = totalWave;
 
-      vec3 tangent = vec3(1.0, 0.0, (cos(pos.x * 0.07 + t * 1.2) * 0.08));
-      vec3 bitangent = vec3(0.0, 1.0, (-sin(pos.y * 0.07 + t * 0.9) * 0.08));
+      // Precise normals for golden specular sparkles
+      vec3 tangent = vec3(1.0, 0.0, (cos(pos.x * 0.08 + t * 1.4) * 0.09));
+      vec3 bitangent = vec3(0.0, 1.0, (-sin(pos.y * 0.08 + t * 1.0) * 0.09));
       vNormal = normalize(cross(tangent, bitangent));
 
       vec4 worldPos = modelMatrix * vec4(pos, 1.0);
@@ -75,9 +76,11 @@ const OceanShader = {
       vec3 viewDir = normalize(cameraPosition - vWorldPosition);
       vec3 normal = normalize(vNormal);
 
+      // Fresnel reflection
       float fresnel = pow(1.0 - max(0.0, dot(viewDir, normal)), 2.6);
       fresnel = clamp(fresnel, 0.12, 0.94);
 
+      // Sun specular beam
       vec3 sunDir = normalize(uSunPosition - vWorldPosition);
       vec3 reflectDir = reflect(-sunDir, normal);
       float spec = pow(max(0.0, dot(viewDir, reflectDir)), 36.0);
@@ -135,13 +138,15 @@ function WaterMesh({ scrollProgress }: { scrollProgress: number }) {
     };
   }, []);
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (!meshRef.current) return;
     const mat = meshRef.current.material as THREE.ShaderMaterial;
-    mat.uniforms.uTime.value += delta;
 
-    // Fast responsive lerp (0.2) for 1:1 real-time sync with scroll
-    lerpProgress.current = THREE.MathUtils.lerp(lerpProgress.current, scrollProgress, 0.2);
+    // Use elapsedTime for 100% reliable continuous 60 FPS wave animation
+    mat.uniforms.uTime.value = state.clock.getElapsedTime();
+
+    // Lerp scroll progress
+    lerpProgress.current = THREE.MathUtils.lerp(lerpProgress.current, scrollProgress, 0.25);
     const p = Math.min(Math.max(lerpProgress.current, 0), 1);
     mat.uniforms.uScrollProgress.value = p;
 
@@ -190,12 +195,12 @@ function WaterMesh({ scrollProgress }: { scrollProgress: number }) {
   );
 }
 
-// Floating Particles
+// Floating Sea Dust Particles
 function FloatingSeaParticles({ scrollProgress }: { scrollProgress: number }) {
   const particlesRef = useRef<THREE.Points>(null);
 
   const [positions] = useMemo(() => {
-    const count = 75;
+    const count = 80;
     const pos = new Float32Array(count * 3);
 
     for (let i = 0; i < count; i++) {
@@ -209,8 +214,9 @@ function FloatingSeaParticles({ scrollProgress }: { scrollProgress: number }) {
   useFrame((state) => {
     if (!particlesRef.current) return;
     const pos = particlesRef.current.geometry.attributes.position.array as Float32Array;
-    for (let i = 0; i < 75; i++) {
-      pos[i * 3 + 1] += Math.sin(state.clock.elapsedTime + i) * 0.003;
+    const t = state.clock.getElapsedTime();
+    for (let i = 0; i < 80; i++) {
+      pos[i * 3 + 1] += Math.sin(t * 1.5 + i) * 0.004;
     }
     particlesRef.current.geometry.attributes.position.needsUpdate = true;
   });
@@ -224,24 +230,24 @@ function FloatingSeaParticles({ scrollProgress }: { scrollProgress: number }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.22}
+        size={0.25}
         color={scrollProgress < 0.5 ? '#FEF08A' : '#FF9933'}
         transparent
-        opacity={0.6}
+        opacity={0.65}
         blending={THREE.AdditiveBlending}
       />
     </points>
   );
 }
 
-// Horizon & Dynamic Camera perfectly synchronized
+// Amalfi Horizon & Dynamic Camera
 function AmalfiCoastHorizon({ scrollProgress }: { scrollProgress: number }) {
   const sunMesh = useRef<THREE.Mesh>(null);
   const fogRef = useRef<THREE.FogExp2>(null);
   const lerpProgress = useRef(scrollProgress);
 
   useFrame((state) => {
-    lerpProgress.current = THREE.MathUtils.lerp(lerpProgress.current, scrollProgress, 0.2);
+    lerpProgress.current = THREE.MathUtils.lerp(lerpProgress.current, scrollProgress, 0.25);
     const p = Math.min(Math.max(lerpProgress.current, 0), 1);
 
     const camY = 5.5 - p * 4.2;
@@ -288,6 +294,7 @@ export default function AmaraWaterCanvas({ scrollProgress = 0, className = '' }:
   return (
     <div className={`relative w-full h-full min-h-[600px] overflow-hidden ${className}`}>
       <Canvas
+        frameloop="always"
         camera={{ position: [0, 5.5, 20], fov: 50, near: 0.1, far: 220 }}
         dpr={[1, 1.5]}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
